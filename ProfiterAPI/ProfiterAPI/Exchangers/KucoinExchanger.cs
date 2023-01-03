@@ -1,7 +1,6 @@
 ﻿using Kucoin.Net.Clients;
 using Kucoin.Net.Objects;
 using ProfiterAPI.Clients;
-using ProfiterAPI.Extensions;
 using System.Collections.Concurrent;
 
 namespace ProfiterAPI.Exchangers
@@ -9,7 +8,6 @@ namespace ProfiterAPI.Exchangers
     public class KucoinExchanger : Exchanger
     {
         KucoinCli kucoin;
-        Dictionary<string, decimal> currency = new Dictionary<string, decimal>();
         public KucoinExchanger()
         {
             kucoin = new KucoinCli();
@@ -19,26 +17,35 @@ namespace ProfiterAPI.Exchangers
             try
             {
                 decimal kucoinCurrencyValue = await this.GetCurrency(inputCurrency, outputCurrency);
+                //TODO: Handle multiply by zero
                 decimal resultOutputAmount = inputAmount * kucoinCurrencyValue;
                 return resultOutputAmount;
 
             }
             catch (Exception)
             {
-                Console.WriteLine("An error occured!");
+                // TODO: Handle Exception
                 return 0;
-                // Handel ex
             }
         }
         public override async Task<decimal> GetCurrency(string inputCurrency, string outputCurrency)
         {
-            var request = await kucoin.client.SpotApi.ExchangeData.GetFiatPricesAsync(outputCurrency, new List<string>() { inputCurrency });
-            foreach (var item in request.Data)
+            try
             {
-                currency[item.Key] = item.Value;
+                var response = await kucoin.client.SpotApi.ExchangeData.GetTickerAsync(inputCurrency + "-" + outputCurrency);
+                if(response.Data == null)
+                {
+                    return 0;
+                }
+                decimal? value = response.Data.LastPrice;
+                return (decimal)value;
+
             }
-            decimal value = Helper.GetCurrencyPrice(currency);
-            return value;
+            catch (Exception)
+            {
+                //TODO: Handle an exception
+                return 0;
+            }
         }
         public override decimal GetRates(string baseCurrency, string quoteCurrency)
         {
