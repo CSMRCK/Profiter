@@ -1,0 +1,13 @@
+
+ProfiterAPI/.vs/ProfiterAPI/v17/.suo
+*.cache
+ProfiterAPI/ProfiterAPI/obj/
+ProfiterAPI/ProfiterAPI/bin/
+ProfiterAPI/ProfiterAPI/WeatherForecast.cs
+ProfiterAPI/ProfiterAPI/Controllers/WeatherForecastController.cs
+ProfiterAPI/.vs/ProfiterAPI/FileContentIndex/598f206d-4985-4423-bbd1-659d44e4d6af.vsidx
+ProfiterAPI/.vs/ProfiterAPI/DesignTimeBuild/.dtbcache.v2
+ProfiterAPI/.vs/ProfiterAPI/FileContentIndex/read.lock
+ProfiterAPI/.vs/ProfiterAPI/v17/.futdcache.v2
+ProfiterAPI/.vs/ProjectEvaluation/profiterapi.metadata.v5.1
+ProfiterAPI/.vs/ProjectEvaluation/profiterapi.projects.v5.1
