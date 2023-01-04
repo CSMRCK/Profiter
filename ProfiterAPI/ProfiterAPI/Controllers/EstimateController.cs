@@ -9,38 +9,39 @@ namespace ProfiterAPI.Controllers
     [ApiController]
     public class EstimateController : ControllerBase
     {
-        // GET: api/<CheckController>
-        KucoinExchanger kucoin = new KucoinExchanger();
-        BinanceExchanger binance = new BinanceExchanger();
+        List<Exchanger> exchangerList = new List<Exchanger>() { new KucoinExchanger(), new BinanceExchanger() };
 
         [HttpGet]
         public async Task<IEnumerable<string>> Get(decimal inputAmount, string inputCurrency, string outputCurrency)
         {
-            decimal kucoinRequest = await kucoin.GetOutputAmount(inputAmount, inputCurrency, outputCurrency);
-            string kucoinResult = ("exchangeName: Kucoin, outputAmount: " + kucoinRequest);
+            List<string> response = new List<string>();
+            Dictionary<string, decimal> prices = new Dictionary<string, decimal>();
 
-            decimal binanceRequest = await binance.GetOutputAmount(inputAmount, inputCurrency, outputCurrency);
-            string binanceResult = ("exchangeName: Binance, outputAmount: " + binanceRequest);
+            foreach (var item in exchangerList)
+            {
+                var result = await item.GetOutputAmount(inputAmount, inputCurrency, outputCurrency);
 
-            if (kucoinRequest == 0 && binanceRequest == 0)
-            {
-                return new string[] {"No data!"};
-            }
-            
-            else if (kucoinRequest == 0)
-            {
-                return new string[] { "Kucoin has no data!", binanceResult, "Binance offers better value" };
-            }
-            else if (binanceRequest == 0)
-            {
-                return new string[] { kucoinResult, "Binance has no data!", "Kucoin offers better value" };
+                if (result == 0)
+                {
+                    response.Add($"exchangeName: {item.ToString()} has no data!");
+                }
+                else
+                {
+                    response.Add($"exchangeName: {item.ToString()}, outputAmount: " + result);
+                    prices.Add(item.ToString(), result);
+                }
             }
 
-            if (kucoinRequest < binanceRequest)
+            if (prices.Any())
             {
-                return new string[] { kucoinResult, binanceResult, "Kucoin offers better value" };
+                var price = prices.MinBy(p => p.Value);
+                string bestPrice = $"Best price has {price.Key} {price.Value}";
+                var data = String.Join(", ", response.ToArray());
+                return new string[] { data, bestPrice };
             }
-            else return new string[] { kucoinResult, binanceResult, "Binance offers better value" };
+
+            else return new string[] { "No data found!" };
+
         }
     }
 }
