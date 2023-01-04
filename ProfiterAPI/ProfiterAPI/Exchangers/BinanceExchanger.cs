@@ -54,10 +54,9 @@ namespace ProfiterAPI.Exchangers
             }
         }
 
-
-        public override decimal GetRates(string baseCurrency, string quoteCurrency)
+        public override string ToString()
         {
-            throw new NotImplementedException();
+            return "Binance";
         }
     }
 }
